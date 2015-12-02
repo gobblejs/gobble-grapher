@@ -10,6 +10,10 @@
     "gobble",
     "d3"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IvanSanchez/gobble-grapher.git"
+  },
   "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
   "license": "Beerware",
   "dependencies": {
