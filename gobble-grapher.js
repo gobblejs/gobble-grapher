@@ -22,8 +22,8 @@ function getNodeName(node) {
 
 module.exports = function discover(node, notRoot) {
 
-// console.log(ndid);
 	var ndid = getNodeName(node);
+// console.log(ndid);
 	nodes[ndid] = node;	// Free bonus: root is node zero.
 
 	nodes[ndid].group=1;	// Assume a source node for colouring
@@ -31,7 +31,7 @@ module.exports = function discover(node, notRoot) {
 // 	console.dir(node);
 
 	if ('inputs' in node) {
-// 		node._nodetype = 'Merger';
+		// Merger node
 
 		for(var i in node.inputs) {
 			links.push({
@@ -45,22 +45,26 @@ module.exports = function discover(node, notRoot) {
 		nodes[ndid].group=2;	// Different colour
 	}
 
-	if ('transformer' in node) {
-// 		node._nodetype = 'Transformer';
-// console.log('Processing transformer node');
+	if ('input' in node) {
+		// Either transformer or observer
 
 		links.push({
 			source: getNodeName(node.input),
 			target: node.id
 		});
 
+		if ('transformer' in node) {
+			// Transformer node
+			nodes[ndid].group=3;	// Different colour
+		} else if ('fn' in node) {
+			// Observer node
+			nodes[ndid].group=4;	// Different colour
+		}
+
 		discover(node.input, true);
 
-		nodes[ndid].group=3;	// Different colour
 
 	}
-
-
 
 
 
@@ -86,7 +90,15 @@ module.exports = function discover(node, notRoot) {
 }
 
 
+// If called standalone...
+if (process.argv[1].search('gobble-grapher.js')) {
+	console.log('Attempting to display gobblefile');
 
+	var gobbleFile = path.join(process.cwd(), 'gobblefile' );
+	var gobbleRootNode = require( gobbleFile );
+// 	console.dir(gobbleRootNode);
+	module.exports(gobbleRootNode);
+}
 
 
 var http = require('http'),
@@ -99,6 +111,7 @@ var template = handlebars.compile( fs.readFileSync(path.join(__dirname, 'gobble-
 http.createServer(function (req, res) {
 	res.writeHead(200, {'Content-Type': 'text/html'});
 
+// var template = handlebars.compile( fs.readFileSync(path.join(__dirname, 'gobble-grapher.hbs')).toString() );
 	res.end( template({
 		links: JSON.stringify(indexedLinks),
 		nodes: JSON.stringify(nodeNames)
