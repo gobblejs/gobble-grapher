@@ -48,8 +48,10 @@ body {
 	    height = window.innerHeight;
 
 	var force = d3.layout.force()
-		.charge(-900)
-		.linkDistance(90)
+		.charge(-300)
+		.gravity(0.05)
+		.linkStrength(0.2)
+// 		.linkDistance(50)
 		.size([width, height]);
 
 	var svg = d3.select("body").append("svg")
@@ -57,60 +59,84 @@ body {
 		.attr("height", height);
 
 
+	// Clamp root (always node zero) to bottom
+	nodes[0].fixed = true;
+	nodes[0].x = width/2;
+	nodes[0].y = height - 30;
+
+	// Start source nodes (group 1) at top, equally spaced
+	var sourceNodeCount = 0;
+	for (var i in nodes) {
+		if (nodes[i].group === 1) {
+			sourceNodeCount++;
+		}
+	}
+
+	var j = 1;
+	var startX = 30;
+	for (var i in nodes) {
+		if (nodes[i].group === 1) {
+			nodes[i].fixed = true;
+			nodes[i].y = startX += 10;
+			nodes[i].x = j * (width / (sourceNodeCount+1) )
+			j++;
+		}
+	}
 
 	var color = d3.scale.category20();
 
-		force
-			.nodes(nodes)
-			.links(links)
-			.start();
+	force
+		.nodes(nodes)
+		.links(links)
+		.start();
 
-		// build the arrow.
-		svg.append("svg:defs").selectAll("marker")
-			.data(["end"])
-			.enter().append("svg:marker")
-			.attr("id", String)
-			.attr("viewBox", "0 -5 10 10")
-			.attr("refX", 15)
-			.attr("refY", -1.5)
-			.attr("markerWidth", 10)
-			.attr("markerHeight", 10)
-			.attr("orient", "auto")
-			.append("svg:path")
-			.attr("d", "M0,-5L10,0L0,5");
+	// build the arrow.
+	svg.append("svg:defs").selectAll("marker")
+		.data(["end"])
+		.enter().append("svg:marker")
+		.attr("id", String)
+		.attr("viewBox", "0 -5 10 10")
+		.attr("refX", 15)
+		.attr("refY", -1.5)
+		.attr("markerWidth", 10)
+		.attr("markerHeight", 10)
+		.attr("orient", "auto")
+		.append("svg:path")
+		.attr("d", "M0,-5L10,0L0,5");
 
-		var link = svg.selectAll(".link")
-			.data(links)
-			.enter().append("line")
-			.attr("class", "link")
-			.style("stroke-width", function(d) { return Math.sqrt(d.value); })
-			.attr("marker-end", "url(#end)");	// arrowhead
+	var link = svg.selectAll(".link")
+		.data(links)
+		.enter().append("line")
+		.attr("class", "link")
+		.style("stroke-width", function(d) { return Math.sqrt(d.value); })
+		.attr("marker-end", "url(#end)");	// arrowhead
 
-		var node = svg.selectAll(".node")
-			.data(nodes)
-			.enter()
-			.append('g')
-			.attr("class", "node")
-			.call(force.drag);
+	var node = svg.selectAll(".node")
+		.data(nodes)
+		.enter()
+		.append('g')
+		.attr("class", "node")
+		.call(force.drag);
 
-		node.append("circle")
-			.attr("class", "node")
-			.attr("r", 5)
-			.style("fill", function(d) { return color(d.group); });
+	node.append("circle")
+		.attr("class", "node")
+		.attr("r", 5)
+		.style("fill", function(d) { return color(d.group); });
 
-		node.append("text")
-			.attr("x", 12)
-			.attr("dy", ".35em")
-			.text(function(d) { return d.name; });
+	node.append("text")
+		.attr("x", 12)
+		.attr("dy", ".35em")
+		.text(function(d) { return d.name; });
 
-		force.on("tick", function() {
-			link.attr("x1", function(d) { return d.source.x; })
-				.attr("y1", function(d) { return d.source.y; })
-				.attr("x2", function(d) { return d.target.x; })
-				.attr("y2", function(d) { return d.target.y; });
+	force.on("tick", function() {
+		link.attr("x1", function(d) { return d.source.x; })
+			.attr("y1", function(d) { return d.source.y; })
+			.attr("x2", function(d) { return d.target.x; })
+			.attr("y2", function(d) { return d.target.y; });
 
-			node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-		});
+		node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	});
+
 
 
 

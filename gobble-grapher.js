@@ -24,7 +24,7 @@ module.exports = function discover(node, notRoot) {
 
 // console.log(ndid);
 	var ndid = getNodeName(node);
-	nodes[ndid] = node;
+	nodes[ndid] = node;	// Free bonus: root is node zero.
 
 	nodes[ndid].group=1;	// Assume a source node for colouring
 
@@ -98,6 +98,7 @@ var template = handlebars.compile( fs.readFileSync(path.join(__dirname, 'gobble-
 
 http.createServer(function (req, res) {
 	res.writeHead(200, {'Content-Type': 'text/html'});
+
 	res.end( template({
 		links: JSON.stringify(indexedLinks),
 		nodes: JSON.stringify(nodeNames)
