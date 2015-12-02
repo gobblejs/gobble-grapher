@@ -31,7 +31,7 @@ Just wrap the last gobble node into a gobble-graph call, like this:
 
 ```js
 var gobbleGrapher = require('gobble-graph');
-module.exports = gobble([js, css, whatever]);
+module.exports = gobbleGrapher( gobble([js, css, whatever]) );
 
 ```
 
