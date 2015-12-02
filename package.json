@@ -1,0 +1,18 @@
+{
+  "name": "gobble-grapher",
+  "version": "0.1.0",
+  "description": "Displays an interactive graph of your GobbleJS workflow",
+  "main": "gobble-grapher.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gobble",
+    "d3"
+  ],
+  "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
+  "license": "Beerware",
+  "dependencies": {
+    "handlebars": "^4.0.5"
+  }
+}

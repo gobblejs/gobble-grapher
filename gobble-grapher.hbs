@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<!-- <script src="https://d3js.org/d3.v3.js" charset="utf-8"></script> -->
+<style>
+
+.node {
+	stroke: #fff;
+	stroke-width: 1.5px;
+}
+
+.link {
+	stroke: #999;
+	stroke-opacity: .6;
+}
+
+text {
+	fill: #000;
+	stroke-width: 0;
+	font: 10px sans-serif;
+	pointer-events: none;
+}
+
+/*svg {
+	width: 100vw;
+	height: 100vh;
+}*/
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+</style>
+<body>
+<script>
+
+	var links = {{{ links }}};
+	var nodes = {{{ nodes }}};
+
+	console.log('Links: ', links);
+	console.log('Link 1: ', links[0]);
+	console.log('Nodes: ', nodes);
+
+// 	var width = 960,
+// 	height = 960;
+	var width = window.innerWidth,
+	    height = window.innerHeight;
+
+	var force = d3.layout.force()
+		.charge(-900)
+		.linkDistance(90)
+		.size([width, height]);
+
+	var svg = d3.select("body").append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+
+
+	var color = d3.scale.category20();
+
+		force
+			.nodes(nodes)
+			.links(links)
+			.start();
+
+		// build the arrow.
+		svg.append("svg:defs").selectAll("marker")
+			.data(["end"])
+			.enter().append("svg:marker")
+			.attr("id", String)
+			.attr("viewBox", "0 -5 10 10")
+			.attr("refX", 15)
+			.attr("refY", -1.5)
+			.attr("markerWidth", 10)
+			.attr("markerHeight", 10)
+			.attr("orient", "auto")
+			.append("svg:path")
+			.attr("d", "M0,-5L10,0L0,5");
+
+		var link = svg.selectAll(".link")
+			.data(links)
+			.enter().append("line")
+			.attr("class", "link")
+			.style("stroke-width", function(d) { return Math.sqrt(d.value); })
+			.attr("marker-end", "url(#end)");	// arrowhead
+
+		var node = svg.selectAll(".node")
+			.data(nodes)
+			.enter()
+			.append('g')
+			.attr("class", "node")
+			.call(force.drag);
+
+		node.append("circle")
+			.attr("class", "node")
+			.attr("r", 5)
+			.style("fill", function(d) { return color(d.group); });
+
+		node.append("text")
+			.attr("x", 12)
+			.attr("dy", ".35em")
+			.text(function(d) { return d.name; });
+
+		force.on("tick", function() {
+			link.attr("x1", function(d) { return d.source.x; })
+				.attr("y1", function(d) { return d.source.y; })
+				.attr("x2", function(d) { return d.target.x; })
+				.attr("y2", function(d) { return d.target.y; });
+
+			node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+		});
+
+
+
+</script>
+</body>
+</html>
