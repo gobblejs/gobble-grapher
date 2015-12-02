@@ -15,7 +15,9 @@ var cwd = process.cwd() + path.sep;
 
 function getNodeName(node) {
 	// Either the dir from the source node, or the id+name of the transform/merge
-	var ndid = node.dir ? node.dir : node.id;
+	var ndid = node.dir ? node.dir :
+		node.file ? node.file :
+		node.id;
 	ndid = ndid.replace(cwd, '');
 	return ndid;
 }
