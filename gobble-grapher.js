@@ -18,6 +18,11 @@ function getNodeName(node) {
 	var ndid = node.dir ? node.dir :
 		node.file ? node.file :
 		node.id;
+		
+	if (!ndid) {
+		console.error('Node has no name!!');
+		console.dir(node);
+	}
 	ndid = ndid.replace(cwd, '');
 	return ndid;
 }
@@ -25,7 +30,6 @@ function getNodeName(node) {
 module.exports = function discover(node, notRoot) {
 
 	var ndid = getNodeName(node);
-// console.log(ndid);
 	nodes[ndid] = node;	// Free bonus: root is node zero.
 
 	nodes[ndid].group=1;	// Assume a source node for colouring
@@ -93,7 +97,7 @@ module.exports = function discover(node, notRoot) {
 
 
 // If called standalone...
-if (process.argv[1].search('gobble-grapher.js')) {
+if (process.argv[1].search('gobble-grapher.js') !== -1) {
 	console.log('Attempting to display gobblefile');
 
 	var gobbleFile = path.join(process.cwd(), 'gobblefile' );
