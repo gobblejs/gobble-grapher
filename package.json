@@ -1,6 +1,6 @@
 {
   "name": "gobble-grapher",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Displays an interactive graph of your GobbleJS workflow",
   "main": "gobble-grapher.js",
   "scripts": {
